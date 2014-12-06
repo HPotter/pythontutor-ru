@@ -16,7 +16,6 @@ class Language(models.Model):
 
 class Problem(models.Model):
     urlname = models.SlugField('Имя для адресной строки', unique=True)
-    filename = models.CharField('Имя файла с задачей', max_length=200, blank=True)
     yaml = models.TextField('YAML задачи', blank=True)
 
     def __str__(self):
@@ -44,7 +43,6 @@ class Lesson(models.Model):
     description = models.TextField('Описание', blank=True)
     # Currently description is nowhere viewed
     urlname = models.SlugField('Имя для адресной строки', unique=True)
-    filename = models.CharField('Имя файла с уроком', max_length=200, blank=True)
     contents = models.TextField('Текст урока', blank=True)
     problems = models.ManyToManyField(Problem, through='ProblemInLesson', blank=True, null=True)
     external_contest_link = models.URLField('Внешняя ссылка на контест', blank=True, null=True)
