@@ -50,7 +50,7 @@ class Lesson(models.Model):
     external_contest_link = models.URLField('Внешняя ссылка на контест', blank=True, null=True)
 
     def __str__(self):
-        return '{self.slug}: {self.title}'.format(self=self)
+        return '{self.urlname}: {self.title}'.format(self=self)
 
 
 class ProblemInLesson(models.Model):
