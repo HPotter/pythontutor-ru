@@ -45,4 +45,4 @@ def dump(*args, **kwargs):
         'indent': 2,
     })
 
-    return yaml.dump(*args, **kwargs)
+    return yaml.dump(*args, **kwargs)  # TODO safe_dump

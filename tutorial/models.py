@@ -17,7 +17,7 @@ class Language(models.Model):
 class Problem(models.Model):
     urlname = models.SlugField('Имя для адресной строки', unique=True)
     yaml = models.TextField('YAML задачи', blank=True)
-    lesson = models.ForeignKey('Lesson', verbose_name='Урок', null=True)  # TODO null=False
+    lesson = models.ForeignKey('Lesson', verbose_name='Урок', null=True, related_name='problems')  # TODO null=False
 
     class Meta:
         order_with_respect_to = 'lesson'
@@ -50,7 +50,7 @@ class Lesson(models.Model):
     contents = models.TextField('Текст урока', blank=True)
     problems_m2m = models.ManyToManyField(Problem, through='ProblemInLesson', blank=True, null=True, related_name='lessons_m2m')
     external_contest_link = models.URLField('Внешняя ссылка на контест', blank=True, null=True)
-    course = models.ForeignKey('Course', verbose_name='Курс', null=True)  # TODO null=False
+    course = models.ForeignKey('Course', verbose_name='Курс', null=True, related_name='lessons')  # TODO null=False
 
     class Meta:
         order_with_respect_to = 'course'

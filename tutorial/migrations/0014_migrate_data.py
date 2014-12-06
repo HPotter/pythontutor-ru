@@ -3,10 +3,75 @@ from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
+from django.conf import settings
+
 from ..yaml_extended import dump, quoted, folded
 
-from ..problems import load_problem
-from ..lessons import load_lesson
+
+ABSOLUTE_PATH_TO_PROBLEMS = settings.ABSOLUTE_PREFIX + 'problems/'
+ABSOLUTE_PATH_TO_LESSONS = settings.ABSOLUTE_PREFIX + 'lessons/'
+
+
+def parse_problem(filename):
+    ret = {}
+    ret['tests'] = []
+    ret['answers'] = []
+
+    curParts = []
+    curDelimiter = None
+
+    def processRecord():
+        if curDelimiter == 'Name:':
+            ret['name'] = '\n'.join(curParts).strip()
+        elif curDelimiter == 'Statement:':
+            ret['statement'] = ' '.join(curParts).strip()
+        elif curDelimiter == 'Test:':
+            ret['tests'].append('\n'.join(curParts).strip())
+        elif curDelimiter == 'Answer:':
+            ret['answers'].append('\n'.join(curParts).strip())
+
+
+    with open(filename, 'r', encoding='utf-8') as problem_file:
+        for line in problem_file.readlines():
+            # only strip TRAILING spaces and not leading spaces
+            line = line.rstrip()
+
+            # comments are denoted by a leading '//', so ignore those lines.
+            # Note that I don't use '#' as the comment token since sometimes I
+            # want to include Python comments in the skeleton code.
+            if line.startswith('//'):
+                continue
+
+            # special-case one-liners:
+            if line.startswith('MaxInstructions:'):
+                ret['max_instructions'] = int(line.split(':')[1])
+                continue # move to next line
+
+
+            if line in ('Name:', 'Statement:', 'Test:', 'Answer:'):
+                processRecord()
+                curDelimiter = line
+                curParts = []
+            else:
+                curParts.append(line)
+
+    # don't forget to process the FINAL record
+    processRecord()
+
+    assert len(ret['tests']) == len(ret['answers'])
+
+    return ret
+
+
+def load_problem(problem):
+    return parse_problem(ABSOLUTE_PATH_TO_PROBLEMS + problem.filename)
+
+
+def load_lesson(lesson):
+    filename = ABSOLUTE_PATH_TO_LESSONS + lesson.filename
+
+    with open(filename, 'r', encoding='utf-8') as lesson_file:
+        return lesson_file.read()
 
 
 class Migration(DataMigration):
@@ -38,8 +103,7 @@ class Migration(DataMigration):
         # migrate Lesson
         for lesson in orm.Lesson.objects.all():
             # migrate contents
-            lesson_data = load_lesson(lesson)
-            lesson.contents = lesson_data['content']
+            lesson.contents = load_lesson(lesson)
 
             lesson.save()
 

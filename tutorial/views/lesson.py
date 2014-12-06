@@ -8,13 +8,13 @@ from tutorial.views import DEFAULT_COURSE, need_admin
 
 
 def lesson_in_course(request, lesson_slug):
-    course = Course.objects.get(urlname=DEFAULT_COURSE)
+    # course = Course.objects.get(urlname=DEFAULT_COURSE)
     lesson_db = Lesson.objects.get(urlname=lesson_slug)
-
-    lessons = course.lessonincourse_set.all()
-    lesson_in_course = lesson_db.lessonincourse_set.get(course=course)
-
-    problems = get_sorted_problems(lesson=lesson_db)
+    #
+    # lessons = course.lessonincourse_set.all()
+    # lesson_in_course = lesson_db.lessonincourse_set.get(course=course)
+    #
+    # problems = get_sorted_problems(lesson=lesson_db)
 
     lesson = load_lesson(lesson_db)
 
