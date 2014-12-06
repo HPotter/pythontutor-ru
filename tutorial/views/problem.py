@@ -1,4 +1,4 @@
-import json
+from collections import OrderedDict
 
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
@@ -25,39 +25,49 @@ def get_best_saved_code(user, problem_urlname):
     return submission.code if submission else ''
 
 
+def problem_status(submission_statuses):
+    if 1 in submission_statuses:
+        return 'solved'
+    elif 2 in submission_statuses:
+        return 'accepted'
+    elif 0 in submission_statuses:
+        return 'unsolved'
+    else:
+        return ''
+
+
 @need_login
-def problem_in_lesson(request, lesson_slug, problem_slug):
-    course = Course.objects.get(urlname=DEFAULT_COURSE)
-    lesson_db = Lesson.objects.get(urlname=lesson_slug)
+def problem(request, lesson_slug, problem_slug):
+    lesson = Lesson.objects.get(urlname=lesson_slug)
+    problem = Problem.objects.get(urlname=problem_slug)
 
-    lessons = course.lessonincourse_set.all()
-    lesson = load_lesson(lesson_db)
-    lesson_in_course = lesson_db.lessonincourse_set.get(course=course)
+    lesson_problems = [
+        (
+            problem,
+            problem_status(problem.submissions.values_list('status', flat=True))
+        ) for problem in lesson.problems.all()
+    ]
 
-    problems = get_sorted_problems(lesson=lesson_db)
-    for problem in problems:
-        if request.user.is_authenticated():
-            statuses = [submission.get_status_display() for submission 
-                    in Submission.objects.filter(user=request.user, problem=problem['db_object'])]
-        else:
-            statuses = []
-
-        if 'ok' in statuses:
-            problem['status'] = 'solved'
-        elif 'accepted' in statuses:
-            problem['status'] = 'accepted'
-        elif 'error' in statuses:
-            problem['status'] = 'unsolved'
-        else:
-            problem['status'] = ''
-
-    problem_db = Problem.objects.get(urlname=problem_slug)
-    problem = load_problem(problem_db)
+    # for problem in lesson.problems:
+    #     if request.user.is_authenticated():
+    #         statuses = [submission.get_status_display() for submission
+    #                 in Submission.objects.filter(user=request.user, problem=problem['db_object'])]
+    #     else:
+    #         statuses = []
+    #
+    #     if 'ok' in statuses:
+    #         problem['status'] = 'solved'
+    #     elif 'accepted' in statuses:
+    #         problem['status'] = 'accepted'
+    #     elif 'error' in statuses:
+    #         problem['status'] = 'unsolved'
+    #     else:
+    #         problem['status'] = ''
 
     saved_code = get_best_saved_code(request.user, problem_slug)
 
-    tests_examples = []
-    for test_input, test_output in zip(problem['tests'], problem['answers']):
-        tests_examples.append({'input': test_input, 'output': test_output})
+    # tests_examples = []
+    # for test_input, test_output in zip(problem['tests'], problem['answers']):
+    #     tests_examples.append({'input': test_input, 'output': test_output})
 
     return render(request, 'problem.html', locals())

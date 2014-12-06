@@ -2,23 +2,15 @@ from json import dumps
 
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 
-from tutorial.models import Course, Lesson, Problem, Submission
-from tutorial.problems import load_problem
+from tutorial.models import Problem, Submission
 from tutorial.tester import run_test
-from tutorial.views import DEFAULT_COURSE
 
 
 def tester_submit(request):
-    post = request.POST
-
-    if 'user_code' not in post or 'problem' not in post:
+    if 'user_code' not in request.POST or 'problem' not in request.POST:
         return HttpResponseBadRequest()
 
-    problem_db = Problem.objects.get(urlname=post['problem'])
-    if problem_db is None:
-        return HttpResponseNotFound()
-
-    problem = load_problem(problem_db)
+    problem = Problem.objects.get(urlname=request.POST['problem'])
 
     result = {
         'status': 'ok',
@@ -26,8 +18,8 @@ def tester_submit(request):
     }
 
     test_id = 0
-    for test_input, test_answer in zip(problem['tests'], problem['answers']):
-        test_result = run_test(post['user_code'], test_input, test_answer)
+    for test in problem.tests:
+        test_result = run_test(request.POST['user_code'], test['input'], test['answer'])
         test_status = test_result.verdict_status()
 
         if test_status != 'ok' and result['status'] == 'ok':
@@ -40,13 +32,13 @@ def tester_submit(request):
 
     if request.user.get_profile().course and request.user.get_profile().course.get_ok_ac_policy_display() == 'use_accepted_instead_of_ok':
         if result['status'] == 'ok':
-            status = 'accepted'
+            result['status'] = 'accepted'
 
     submission = Submission(
-        problem = problem_db,
-        code = post['user_code'],
-        user = request.user, 
-        status = {v: k for k, v in Submission.STATUS_CHOICES}[result['status']]
+        problem=problem,
+        code=request.POST['user_code'],
+        user=request.user,
+        status={v: k for k, v in Submission.STATUS_CHOICES}[result['status']]
     )
     submission.save()
 

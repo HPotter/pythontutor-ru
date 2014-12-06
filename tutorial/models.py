@@ -133,7 +133,7 @@ class Submission(models.Model):
 
     code = models.TextField()
     user = models.ForeignKey(User)
-    problem = models.ForeignKey(Problem, db_index=True)
+    problem = models.ForeignKey(Problem, db_index=True, related_name='submissions')
     status = models.IntegerField(choices=STATUS_CHOICES)
     time = models.DateTimeField(auto_now_add=True)
     comment = models.TextField(blank=True, null=True)

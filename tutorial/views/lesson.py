@@ -5,7 +5,7 @@ from tutorial.models import Lesson
 
 
 @render_to('lesson.html')
-def lesson_in_course(request, lesson_slug):
+def lesson(request, lesson_slug):
     try:
         lesson = Lesson.objects.prefetch_related('course__lessons').get(urlname=lesson_slug)
     except Lesson.DoesNotExist:

@@ -19,8 +19,8 @@
 		<li class="problems_link">
 			<a href="#problems">Задачи</a>
 			<ul>
-				{% for menu_problem in problems %}
-					<li class="{{ menu_problem.status }}"><a{% if menu_problem.urlname == problem.urlname %} class="active"{% endif %} href="{% url 'problem_in_lesson' lesson.name menu_problem.urlname %}">{{ menu_problem.name }}</a></li>
+				{% for menu_problem, status in lesson_problems %}
+					<li class="{{ status }}"><a{% if menu_problem == problem %} class="active"{% endif %} href="{% url 'problem' lesson.urlname menu_problem.urlname %}">{{ menu_problem.name }}</a></li>
 				{% endfor %}
 			</ul>
 		</li>
@@ -28,7 +28,7 @@
 {% endblock %}
 
 {% block lesson_body %}
-	<h1 class="lesson_name"><small><a href="{% url 'lesson_in_course' lesson.name %}"><span class="glyphicon glyphicon-chevron-left"></span></a> <a href="{% url 'lesson_in_course' lesson.name %}">Занятие {{ lesson_in_course.order }}</a>.</small> {{ lesson.title }}</h1>
+	<h1 class="lesson_name"><small><a href="{% url 'lesson' lesson.urlname %}"><span class="glyphicon glyphicon-chevron-left"></span></a> <a href="{% url 'lesson' lesson.urlname %}">Занятие {{ lesson.order_num }}</a>.</small> {{ lesson.title }}</h1>
 	<h2 class="problem_name"><small>Задача</small> &laquo;{{ problem.name }}&raquo;</h2>
 	<hr>
 
@@ -46,12 +46,12 @@
 			<th class="test_result">Результат</th>
 		</thead>
 		<tbody>
-			{% for test in tests_examples %}
+			{% for test in problem.tests %}
 			<tr>
 				<td class="debug_me"><button class="glyphicon glyphicon-play-circle" title="Отладить код, используя эти входные данные"></button></td>
 				<td><pre class="input">{{ test.input }}</pre></td>
 				<td class="arrow"><span class="glyphicon glyphicon-circle-arrow-right"></span></td>
-				<td><pre class="output">{{ test.output }}</pre></td>
+				<td><pre class="output">{{ test.answer }}</pre></td>
 				<td class="test_result"></td>
 			</tr>
 			{% endfor %}

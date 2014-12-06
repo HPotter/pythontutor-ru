@@ -4,9 +4,9 @@ from django.contrib import admin
 from django.contrib.auth.views import login, logout
 
 from tutorial.views.home import home
-from tutorial.views.lesson import lesson_in_course
+from tutorial.views.lesson import lesson
 from tutorial.views.log_events import log_user_action
-from tutorial.views.problem import problem_in_lesson
+from tutorial.views.problem import problem
 from tutorial.views.profile import profile, register_user
 from tutorial.views.statistics import statistics
 from tutorial.views.tester import tester_submit
@@ -27,9 +27,9 @@ urlpatterns = patterns('',
 
     url(r'^visualizer/', visualizer, name='visualizer'),
 
-    url(r'^lessons/(?P<lesson_slug>[\w\-_]+)/$', lesson_in_course, name="lesson"),
+    url(r'^lessons/(?P<lesson_slug>[\w\-_]+)/$', lesson, name="lesson"),
 
-    url(r'^lessons/(?P<lesson_slug>[\w\-_]+)/problems/(?P<problem_slug>[\w\-_]+)/$', problem_in_lesson, name="problem"),
+    url(r'^lessons/(?P<lesson_slug>[\w\-_]+)/problems/(?P<problem_slug>[\w\-_]+)/$', problem, name="problem"),
 
     url(r'^tester/submit/$', tester_submit, name='tester_submit'),
 
