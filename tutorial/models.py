@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.utils.functional import cached_property
 import yaml
 
+from markdown_tools.parsers import lesson_parser
+
 
 # currently totally unused model
 class Language(models.Model):
@@ -62,6 +64,23 @@ class Lesson(models.Model):
     def order_num(self):
         # TODO rename
         return self._order + 1
+
+    @cached_property
+    def contents_parsed(self):
+        html = lesson_parser.convert(self.contents)
+
+        return {
+            'html': html,
+            'table_of_contents': lesson_parser.toc,
+        }
+
+    @property
+    def contents_html(self):
+        return self.contents_parsed['html']
+
+    @property
+    def table_of_contents(self):
+        return self.contents_parsed['table_of_contents']
 
 
 class ProblemInLesson(models.Model):

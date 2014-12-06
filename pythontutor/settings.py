@@ -141,7 +141,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'south',
     'django_markwhat',
-    'debug_toolbar',
+    #'debug_toolbar',
 
 
     'tutorial',

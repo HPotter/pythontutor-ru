@@ -4,13 +4,40 @@
 {% block headers %}
 	{{ block.super }}
 
+	<script type="text/javascript" src="{{ STATIC_URL }}js/visualizer-page.js"></script>
+
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/lesson.css">
+
+	<style>
+		code.input {
+			display: none;
+		}
+	</style>
+
+	<script>
+		$(function() {
+			$('pre.python-code').click(function() {
+				visualizer.reset();
+				visualizer.setStatus('Загрузка...');
+
+				visualizer.code = $(this).children('.source').text();
+				visualizer.stdin = $(this).children('.input').text();
+
+				visualizer.setStatus('');
+				visualizer.run();
+
+				$('#myModal').modal('toggle');
+
+				return false;
+			});
+		});
+	</script>
 {% endblock %}
 
 {% block navbar_active_lesson %}
 	<ul class="lesson_sections">
 		{# TODO table of contents #}
-		{{ lesson.contents|lesson_toc_markdown }}
+		{{ lesson.table_of_contents|safe }}
 		<li class="problems_link">
 			<a href="#problems">Задачи</a>
 		</li>
@@ -18,9 +45,32 @@
 {% endblock %}
 
 {% block lesson_body %}
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog modal-lg">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<h4 class="modal-title" id="myModalLabel">Пошаговый интерпретатор</h4>
+		  </div>
+		  <div class="modal-body">
+			<div id="visualizer"></div>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+
+<!-- Button trigger modal -->
+	<!--<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">-->
+	  <!--Launch demo modal-->
+	<!--</button>-->
+
 	<h1 class="page-header"><small>Занятие {{ lesson.order_num }}.</small> {{ lesson.title }}</h1>
 
-	{{ lesson.contents|lesson_markdown }}
+	{{ lesson.contents_html|safe }}
 
 	{% if lesson.problems %}
 		<hr>
