@@ -99,7 +99,7 @@ class SubmissionAdmin(admin.ModelAdmin):
 
 
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'course')
+    list_display = ('__str__', 'course')
     list_filter = ('course',)
     list_editable = ('course',)
 

@@ -56,11 +56,8 @@ def _section_names(sections):
     return names
 
 def load_lesson(lesson):
-    filename = ABSOLUTE_PATH_TO_LESSONS + lesson.filename
-    content = open(filename, 'r', encoding='utf-8').read()
-
     return {
         'slug': lesson.urlname,
         'title': lesson.title,
-        'content': content,
+        'content': lesson.contents,
     }
