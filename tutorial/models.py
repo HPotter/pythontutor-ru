@@ -2,6 +2,8 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.functional import cached_property
+import yaml
 
 
 # currently totally unused model
@@ -13,27 +15,42 @@ class Language(models.Model):
 
 
 class Problem(models.Model):
-    urlname = models.CharField('Имя для адресной строки', max_length=200, unique=True, db_index=True)
+    urlname = models.SlugField('Имя для адресной строки', unique=True)
     filename = models.CharField('Имя файла с задачей', max_length=200, blank=True)
+    yaml = models.TextField('YAML задачи', blank=True)
 
     def __str__(self):
-        return '{self.urlname}'.format(**locals())
+        return self.urlname
+
+    @cached_property
+    def yaml_data(self):
+        return yaml.safe_load(self.yaml)
+
+    @property
+    def name(self):
+        return self.yaml_data['name']
+
+    @property
+    def statement(self):
+        return self.yaml_data['statement']
+
+    @property
+    def tests(self):
+        return self.yaml_data['tests']
 
 
 class Lesson(models.Model):
     title = models.CharField('Название', max_length=200)
     description = models.TextField('Описание', blank=True)
     # Currently description is nowhere viewed
-    urlname = models.CharField('Имя для адресной строки', max_length=200, unique=True, db_index=True)
+    urlname = models.SlugField('Имя для адресной строки', unique=True)
     filename = models.CharField('Имя файла с уроком', max_length=200, blank=True)
+    contents = models.TextField('Текст урока', blank=True)
     problems = models.ManyToManyField(Problem, through='ProblemInLesson', blank=True, null=True)
-    external_contest_link = models.CharField('Внешняя ссылка на контест', max_length=200, blank=True, null=True)
+    external_contest_link = models.URLField('Внешняя ссылка на контест', blank=True, null=True)
 
     def __str__(self):
-        return '{self.urlname}: {self.title} (файл: {self.filename})'.format(**locals())
-
-    def __le__(self, other):
-        return self.id < other.id
+        return '{self.slug}: {self.title}'.format(self=self)
 
 
 class ProblemInLesson(models.Model):
@@ -50,7 +67,7 @@ class Course(models.Model):
 
     title = models.CharField('Название', max_length=200)
     description = models.TextField('Описание', blank=True)
-    urlname = models.CharField('Имя для адресной строки', max_length=200, unique=True, db_index=True)
+    urlname = models.SlugField('Имя для адресной строки', unique=True)
     lessons = models.ManyToManyField(Lesson, through='LessonInCourse', blank=True, null=True)
     language = models.ForeignKey(Language, blank=True, null=True)  # unused field
     ok_ac_policy = models.IntegerField(choices=OK_AC_POLICY_CHOICES)
@@ -71,7 +88,7 @@ class UserProfile(models.Model):
     course = models.ForeignKey(Course, null=True, blank=True)
     # here you can add fields like 'school'
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0} {1} ({2})'.format(self.user.first_name, self.user.last_name, self.user.username)
 
 
@@ -92,5 +109,5 @@ class Submission(models.Model):
     comment = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return '{self.user.first_name} {self.user.last_name} on {self.problem}: {0} ({self.time})'\
-                .format(self.get_status_display(), **locals())
+        return '{self.user.first_name} {self.user.last_name} on {self.problem}: {0} ({self.time})'.format(
+            self.get_status_display(), self=self)
