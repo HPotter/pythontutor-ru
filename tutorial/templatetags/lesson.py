@@ -7,6 +7,9 @@ from django.conf import settings
 from django.template import Context, Library, Node, TemplateSyntaxError
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
+import markdown
+from markdown.extensions.fenced_code import FencedCodeExtension
+from markdown.extensions.toc import TocExtension
 
 from tutorial.models import Problem, Submission
 from tutorial.problems import load_problem
@@ -163,3 +166,31 @@ def lesson_navbar(lesson):
         navbar += render_section_navitem(*section)
 
     return mark_safe(navbar)
+
+
+# TODO refactor this mess
+def _parse_lesson_markdown(lesson_contents):
+    md = markdown.Markdown(
+        extensions=[
+            FencedCodeExtension(),
+            TocExtension(marker='[never-put-this-marker-in-lesson]', anchorlink=1),
+        ]
+    )
+
+    result = md.convert(lesson_contents)
+
+    return result, md.toc
+
+
+@register.filter
+def lesson_markdown(lesson_contents):
+    result, toc = _parse_lesson_markdown(lesson_contents)
+
+    return mark_safe(result)
+
+
+@register.filter
+def lesson_toc_markdown(lesson_contents):
+    result, toc = _parse_lesson_markdown(lesson_contents)
+
+    return mark_safe(toc)

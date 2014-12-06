@@ -58,6 +58,11 @@ class Lesson(models.Model):
     def __str__(self):
         return '{self.urlname}: {self.title}'.format(self=self)
 
+    @property
+    def order_num(self):
+        # TODO rename
+        return self._order + 1
+
 
 class ProblemInLesson(models.Model):
     problem = models.ForeignKey(Problem)

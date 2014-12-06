@@ -1,21 +1,18 @@
-from django import template
-from django.shortcuts import render
+from django.http.response import Http404
+from annoying.decorators import render_to
 
-from tutorial.lessons import load_lesson
-from tutorial.models import Course, Lesson, UserProfile
-from tutorial.problems import get_sorted_problems
-from tutorial.views import DEFAULT_COURSE, need_admin
+from tutorial.models import Lesson
 
 
+@render_to('lesson.html')
 def lesson_in_course(request, lesson_slug):
-    # course = Course.objects.get(urlname=DEFAULT_COURSE)
-    lesson_db = Lesson.objects.get(urlname=lesson_slug)
-    #
-    # lessons = course.lessonincourse_set.all()
-    # lesson_in_course = lesson_db.lessonincourse_set.get(course=course)
-    #
-    # problems = get_sorted_problems(lesson=lesson_db)
+    try:
+        lesson = Lesson.objects.prefetch_related('course__lessons').get(urlname=lesson_slug)
+    except Lesson.DoesNotExist:
+        # TODO log
+        # TODO (?) redirect to somewhere
+        raise Http404
 
-    lesson = load_lesson(lesson_db)
-
-    return render(request, 'lesson.html', locals())
+    return {
+        'lesson': lesson,
+    }

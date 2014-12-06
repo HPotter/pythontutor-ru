@@ -23,6 +23,8 @@ class Migration(DataMigration):
         # so we add relations in m2m order and pray that Django order_with_respect would keep this order
         # correct migration code sample below
 
+        # TODO not working as planned, workaround: 'c.set_lesson_order(c.get_lesson_order()); c.save()'
+
         # for course in orm.Course.objects.all():
         #     course.set_lesson_order(
         #         orm.LessonInCourse.objects.filter(course=course).order_by('order').values_list('id', flat=True)

@@ -18,10 +18,10 @@
 {% block sidebar %}
 	{{ block.super }}
 	<ul class="nav nav-sidebar">
-		{% for lic in lessons %}
-			<li{% if lesson.name == lic.lesson.urlname %} class="active"{% endif %}>
-				<a href="{% url 'lesson_in_course' lic.lesson.urlname %}">{{ lic.order }}. {{ lic.lesson.title }}</a>
-				{% if lesson.name == lic.lesson.urlname %}
+		{% for l in lesson.course.lessons.all %}
+			<li{% if lesson == l %} class="active"{% endif %}>
+				<a href="{% url 'lesson' l.urlname %}">{{ l.order_num }}. {{ l.title }}</a>
+				{% if l == lesson %}
 					{% block navbar_active_lesson %}{% endblock %}
 				{% endif %}
 			</li>

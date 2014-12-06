@@ -1,6 +1,5 @@
 {% extends '_lesson_page.html' %}
 {% load lesson %}
-{% load markup %}
 
 {% block headers %}
 	{{ block.super }}
@@ -10,9 +9,8 @@
 
 {% block navbar_active_lesson %}
 	<ul class="lesson_sections">
-		{% if lesson.sections|length > 2 %}
-			{{ lesson|lesson_navbar }}
-		{% endif %}
+		{# TODO table of contents #}
+		{{ lesson.contents|lesson_toc_markdown }}
 		<li class="problems_link">
 			<a href="#problems">Задачи</a>
 		</li>
@@ -20,25 +18,25 @@
 {% endblock %}
 
 {% block lesson_body %}
-	<h1 class="page-header"><small>Занятие {{ lesson_in_course.order }}.</small> {{ lesson.title }}</h1>
+	<h1 class="page-header"><small>Занятие {{ lesson.order_num }}.</small> {{ lesson.title }}</h1>
 
-	{{ lesson.content|markdown:"fenced_code,toc" }}
+	{{ lesson.contents|lesson_markdown }}
 
-	{% if problems %}
+	{% if lesson.problems %}
 		<hr>
 		<div id="problems">
 			<h2>Задачи:</h2>
 			<ol class="lesson_problems">
-				{% for problem in problems %}
+				{% for problem in lesson.problems.all %}
 					<li>
-						<a href="/lessons/{{ lesson.name }}/problems/{{ problem.urlname }}/">{% problem_link problem %}</a>
-						{% ideal_solution problem %}
+						<a href="{% url 'problem' lesson.urlname problem.urlname %}">{{ problem.name }}</a>
 					</li>
 				{% endfor %}
 			</ol>
 		</div>
 	{% endif %}
-	{% if lesson_db.external_contest_link %}
-		<h4><a href="{{ lesson_db.external_contest_link }}">Внешний контест с задачами</a></h4>
+
+	{% if lesson.external_contest_link %}
+		<h4><a href="{{ lesson.external_contest_link }}">Внешний контест с задачами</a></h4>
 	{% endif %}
 {% endblock %}
