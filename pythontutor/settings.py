@@ -140,6 +140,9 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     'south',
+    'django_markwhat',
+
+
     'tutorial',
     'social_login',
     #'django_demo_app',

@@ -27,9 +27,9 @@ urlpatterns = patterns('',
 
     url(r'^visualizer/', visualizer, name='visualizer'),
 
-    url(r'^lessons/([^/]+)/$', lesson_in_course, name="lesson_in_course"),
+    url(r'^lessons/(?P<lesson_slug>[\w\-_]+)/$', lesson_in_course, name="lesson_in_course"),
 
-    url(r'^lessons/([^/]+)/problems/([^/]+)/$', problem_in_lesson, name="problem_in_lesson"),
+    url(r'^lessons/(?P<lesson_slug>[\w\-_]+)/problems/(?P<problem_slug>[\w\-_]+)/$', problem_in_lesson, name="problem_in_lesson"),
 
     url(r'^tester/submit/$', tester_submit, name='tester_submit'),
 

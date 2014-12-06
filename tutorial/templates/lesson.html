@@ -1,5 +1,6 @@
 {% extends '_lesson_page.html' %}
 {% load lesson %}
+{% load markup %}
 
 {% block headers %}
 	{{ block.super }}
@@ -21,7 +22,7 @@
 {% block lesson_body %}
 	<h1 class="page-header"><small>Занятие {{ lesson_in_course.order }}.</small> {{ lesson.title }}</h1>
 
-	{{ lesson|lesson_content }}
+	{{ lesson.content|markdown:"fenced_code,toc" }}
 
 	{% if problems %}
 		<hr>

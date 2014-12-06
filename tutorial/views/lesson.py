@@ -7,9 +7,9 @@ from tutorial.problems import get_sorted_problems
 from tutorial.views import DEFAULT_COURSE, need_admin
 
 
-def lesson_in_course(request, lesson_name):
+def lesson_in_course(request, lesson_slug):
     course = Course.objects.get(urlname=DEFAULT_COURSE)
-    lesson_db = Lesson.objects.get(urlname=lesson_name)
+    lesson_db = Lesson.objects.get(urlname=lesson_slug)
 
     lessons = course.lessonincourse_set.all()
     lesson_in_course = lesson_db.lessonincourse_set.get(course=course)

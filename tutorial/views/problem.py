@@ -26,9 +26,9 @@ def get_best_saved_code(user, problem_urlname):
 
 
 @need_login
-def problem_in_lesson(request, lesson_name, problem_name):
+def problem_in_lesson(request, lesson_slug, problem_slug):
     course = Course.objects.get(urlname=DEFAULT_COURSE)
-    lesson_db = Lesson.objects.get(urlname=lesson_name)
+    lesson_db = Lesson.objects.get(urlname=lesson_slug)
 
     lessons = course.lessonincourse_set.all()
     lesson = load_lesson(lesson_db)
@@ -51,10 +51,10 @@ def problem_in_lesson(request, lesson_name, problem_name):
         else:
             problem['status'] = ''
 
-    problem_db = Problem.objects.get(urlname=problem_name)
+    problem_db = Problem.objects.get(urlname=problem_slug)
     problem = load_problem(problem_db)
 
-    saved_code = get_best_saved_code(request.user, problem_name)
+    saved_code = get_best_saved_code(request.user, problem_slug)
 
     tests_examples = []
     for test_input, test_output in zip(problem['tests'], problem['answers']):

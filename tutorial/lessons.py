@@ -57,18 +57,10 @@ def _section_names(sections):
 
 def load_lesson(lesson):
     filename = ABSOLUTE_PATH_TO_LESSONS + lesson.filename
-    raw_lesson_content = open(filename, 'r', encoding='utf-8').read()
-
-    lesson_content = '{% load lesson_content %}{% section \'__main__\' %}\n' + raw_lesson_content + '{% endsection %}'
-    t = Template(lesson_content)
-
-    context = Context()
-
-    content = _parse_section_node(t.nodelist[1], context, [])
+    content = open(filename, 'r', encoding='utf-8').read()
 
     return {
-        'name': lesson.urlname,
+        'slug': lesson.urlname,
         'title': lesson.title,
         'content': content,
-        'sections': _section_names(content),
     }
