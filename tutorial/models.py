@@ -17,6 +17,10 @@ class Language(models.Model):
 class Problem(models.Model):
     urlname = models.SlugField('Имя для адресной строки', unique=True)
     yaml = models.TextField('YAML задачи', blank=True)
+    lesson = models.ForeignKey('Lesson', verbose_name='Урок', null=True)  # TODO null=False
+
+    class Meta:
+        order_with_respect_to = 'lesson'
 
     def __str__(self):
         return self.urlname
@@ -44,8 +48,12 @@ class Lesson(models.Model):
     # Currently description is nowhere viewed
     urlname = models.SlugField('Имя для адресной строки', unique=True)
     contents = models.TextField('Текст урока', blank=True)
-    problems = models.ManyToManyField(Problem, through='ProblemInLesson', blank=True, null=True)
+    problems_m2m = models.ManyToManyField(Problem, through='ProblemInLesson', blank=True, null=True, related_name='lessons_m2m')
     external_contest_link = models.URLField('Внешняя ссылка на контест', blank=True, null=True)
+    course = models.ForeignKey('Course', verbose_name='Курс', null=True)  # TODO null=False
+
+    class Meta:
+        order_with_respect_to = 'course'
 
     def __str__(self):
         return '{self.urlname}: {self.title}'.format(self=self)
@@ -66,7 +74,7 @@ class Course(models.Model):
     title = models.CharField('Название', max_length=200)
     description = models.TextField('Описание', blank=True)
     urlname = models.SlugField('Имя для адресной строки', unique=True)
-    lessons = models.ManyToManyField(Lesson, through='LessonInCourse', blank=True, null=True)
+    lessons_m2m = models.ManyToManyField(Lesson, through='LessonInCourse', blank=True, null=True, related_name='course_m2m')
     language = models.ForeignKey(Language, blank=True, null=True)  # unused field
     ok_ac_policy = models.IntegerField(choices=OK_AC_POLICY_CHOICES)
 
