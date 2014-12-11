@@ -16,7 +16,7 @@ class CodeSampleProcessor(BlockProcessor):
     [sample input]
     ````
     """
-    RE = re.compile(r'^@@@@(?P<lang>[\w\-_]*?)\n(?P<code>.*?)@@@@\n(?P<input>.*?)@@@@$', re.DOTALL)  # TODO [at] looks weird
+    RE = re.compile(r'^@@@@(?P<executable>executable)?\n(?P<code>.*?)@@@@\n(?P<input>.*?)@@@@$', re.DOTALL)  # TODO [at] looks weird
 
     def test(self, parent, block):
         return bool(self.RE.match(block))
@@ -26,18 +26,24 @@ class CodeSampleProcessor(BlockProcessor):
 
         data = self.RE.match(block).groupdict()
 
-        pre = etree.SubElement(parent, 'pre', {
-            'class': '{0}-code'.format(data['lang']) if data['lang'] else 'code',
+        # TODO fix copypaste from templates/includes/code.html
+        lesson_code = etree.SubElement(parent, 'div', {
+            'class': 'lesson_code',
+            'data-executable': 'true' if 'executable' in data else 'false',
+            'data-dataviz': 'true',
         })
 
-        code = etree.SubElement(pre, 'code', {
-            'class': 'source',
+        if 'executable' in data:
+            input = etree.SubElement(lesson_code, 'pre', {
+                'class': 'stdin',
+                'style': 'display: none;',
+            })
+            input.text = data['input']
+
+        code = etree.SubElement(lesson_code, 'pre', {
+            'class': 'code',
         })
         code.text = data['code']
-        input = etree.SubElement(pre, 'code', {
-            'class': 'input',
-        })
-        input.text = data['input']
 
 
 class CodeSampleExtension(Extension):

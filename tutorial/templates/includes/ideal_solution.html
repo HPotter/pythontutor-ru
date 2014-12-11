@@ -1,0 +1,22 @@
+<table class="table problem_user_and_ideal_solutions hidden-xs hidden-md">
+    <thead>
+        <tr>
+            <th>Ваше решение</td>
+            <th>Эталонное решение</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                {% with code=solution.code executable=False %}
+                    {% include 'includes/code.html' %}
+                {% endwith %}
+            </td>
+            <td>
+                {% with code=problem.ideal_solution.code executable=False %}
+                    {% include 'includes/code.html' %}
+                {% endwith %}
+            </td>
+        </tr>
+    </tfoot>
+</table>

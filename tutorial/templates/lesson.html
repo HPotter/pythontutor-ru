@@ -1,12 +1,14 @@
 {% extends '_lesson_page.html' %}
 {% load lesson %}
+{% load staticfiles %}
+{% load util %}
 
 {% block headers %}
 	{{ block.super }}
 
-	<script type="text/javascript" src="{{ STATIC_URL }}js/visualizer-page.js"></script>
+	<script type="text/javascript" src="{% static 'js/visualizer-page.js' %}"></script>
 
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/lesson.css">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/lesson.css' %}">
 
 	<style>
 		code.input {
@@ -63,11 +65,6 @@
 	  </div>
 	</div>
 
-<!-- Button trigger modal -->
-	<!--<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">-->
-	  <!--Launch demo modal-->
-	<!--</button>-->
-
 	<h1 class="page-header"><small>Занятие {{ lesson.order_num }}.</small> {{ lesson.title }}</h1>
 
 	{{ lesson.contents_html|safe }}
@@ -80,6 +77,11 @@
 				{% for problem in lesson.problems.all %}
 					<li>
 						<a href="{% url 'problem' lesson.urlname problem.urlname %}">{{ problem.name }}</a>
+						{% if problem in user_solutions %}
+							{% with problem=problem solution=user_solutions|getitem:problem %}
+								{% include 'includes/ideal_solution.html' %}
+							{% endwith %}
+						{% endif %}
 					</li>
 				{% endfor %}
 			</ol>

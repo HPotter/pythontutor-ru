@@ -58,7 +58,7 @@
 }
 
 
-.section > h2, .section > h3, .section > h4, .section > h5, .section > h6,
+.main > h1, .main > h2, .main > h3, .main > h4, .main > h5, .main > h6,
 #problems > h2 {
 	/* from http://nicolasgallagher.com/jump-links-and-viewport-positioning/demo/#method-D */
 	border-top: 60px solid transparent;
@@ -68,4 +68,8 @@
 	-webkit-background-clip: padding-box;
 	-moz-background-clip: padding;
 	background-clip: padding-box;
+}
+
+h1.page-header {
+	margin-top: -30px;
 }

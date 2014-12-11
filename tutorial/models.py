@@ -43,6 +43,11 @@ class Problem(models.Model):
     def tests(self):
         return self.yaml_data['tests']
 
+    @property
+    def ideal_solution(self):
+        # TODO refactor me!
+        return self.submissions.filter(user__username='admin', status=1).order_by('time').last()
+
 
 class Lesson(models.Model):
     title = models.CharField('Название', max_length=200)
@@ -123,7 +128,7 @@ class UserProfile(models.Model):
 
 
 class Submission(models.Model):
-    STATUS_CHOICES = (
+    STATUS_CHOICES = (  # TODO anybody plz refactor this
         (0, 'error'), # don't remove this value, or you will have a mess in your database!
         (1, 'ok'),
         (2, 'accepted'),

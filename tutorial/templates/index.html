@@ -1,4 +1,7 @@
-{% extends '_base_basic.html' %} 
+{% extends '_base.html' %}
+
+{% load markup %}
+{% load staticfiles %}
 
 {% block headers %}
 	{{ block.super }}
@@ -6,7 +9,7 @@
 	<link rel="stylesheet" href="{{ STATIC_URL }}edu-python-title.css">
 {% endblock %}
 
-{% block body %}
+{% block container %}
 	<center>
 		<div class="titlePane">
 			<h1>Интерактивный учебник языка Python</h1>
@@ -14,15 +17,15 @@
 		</div>
 
 		<div class="mainBodyPane">
-			{% for course, lessons in courses %}
+			{% for course in courses %}
 				<div class="activityPane" id="solvePane">
 					<h1>{{ course.title }}</h1><br>
 					{% if course.description %}
-						<div class="courseDescription">{{ course.description|safe }}</div>
+						<div class="courseDescription">{{ course.description|markdown }}</div>
 					{% endif %}
 
-					{% for lic in lessons %}
-						<p>Занятие {{ lic.order }}. <a href="/lessons/{{ lic.lesson.urlname }}/">{{ lic.lesson.title }}</a></p>
+					{% for lesson in course.lessons.all %}
+						<p>Занятие {{ lesson.order_num }}. <a href="{% url 'lesson' lesson.urlname %}">{{ lesson.title }}</a></p>
 					{% endfor %}
 				</div>
 			{% endfor %}
@@ -31,15 +34,7 @@
 				<h1>Изучайте Python</h1>
 				<h2>пишите код и смотрите на то, как он выполняется</h2>
 
-				<p><!--
-				This free educational application allows teachers and students to
-				write Python scripts directly in the web browser, execute those scripts,
-				single-step <b>forwards and backwards</b> through execution, and view
-				the run-time state of all data structures.</p>
-
-				<p>Rather than displaying a bland text-based console, the Online Python
-				Tutor provides a rich visualization of variables, heap objects, and
-				stack frames. --> Например, для этого кода:</p>
+				<p>Например, для этого кода:</p>
 
 				<pre>x = ["Alice", "Bob", "Charlie"]
 y = x
@@ -48,7 +43,7 @@ z = ["Alice", "Bob", "Charlie"]</pre>
 				<p>будет сгенерировано вот такое представление, которое демонстрирует, что два имени <code>x</code> и <code>y</code> ссылаются на один и тот же список, а <code>z</code>&nbsp;&#151; на другой.</p>
 
 				<center>
-					<img src="{{ STATIC_URL }}alias-screenshot.png" style="width: 500px"/>
+					<img src="{% static 'alias-screenshot.png' %}" style="width: 500px;" />
 					<h3><a href="{% url 'visualizer' %}">Перейти к онлайн-интерпретатору Python!</a></h3>
 				</center>
 			</div>

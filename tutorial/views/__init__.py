@@ -7,9 +7,6 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect
 
 
-DEFAULT_COURSE = settings.DEFAULT_COURSE
-
-
 def dummy(request):
     return HttpResponse('dummy requested')
 
